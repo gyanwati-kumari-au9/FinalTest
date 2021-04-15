@@ -40,12 +40,13 @@ class TrelloBoard extends Component {
   }
 
   handleTask = async (e, task) => {
+    console.log("Going to handle task", e, task)
     e.preventDefault();
     
     if(task._id){
       // Update
-      console.log("Form update Event");
-      await USER.updateTodoStatus(task._id, {task: task.task, group: task.group}, localStorage.getItem("_tkn"));
+      console.log("Form update Event", task);
+      await USER.updateToDo(task._id, {task: task.task, group: task.group}, localStorage.getItem("_tkn"));
     }else{
       // Create
       console.log("Form create Event");
@@ -57,23 +58,6 @@ class TrelloBoard extends Component {
       payload: [...todos.todos]
     });
     
-  }
-
-  toggleFavorite = async (tid) => {
-    console.log("Toggle Favorite called", tid);
-    await USER.toggleFavorite(tid, localStorage.getItem("_tkn"))
-    this.props.dispatch({
-      type: "FAV_TOGGLE",
-      payload: {tid: tid}
-    });
-  }
-
-  toggleComplete=(tid)=>{
-    alert("Complete Toggle caled"+ tid);
-  }
-
-  deleteToDo=(tid)=>{
-    alert("Delete caled"+ tid);
   }
 
   render() {
@@ -92,6 +76,7 @@ class TrelloBoard extends Component {
         <Row>
             {this.props.todos && this.props.todos.map(group => <Col md={{span:3}} key={group.id}><GroupTasks group={group.group} 
                   tasks={group.tasks} 
+                  id={group.id}
                   handleTask={this.handleTask}
                   toggleFavorite={this.toggleFavorite}
                   toggleComplete={this.toggleComplete}

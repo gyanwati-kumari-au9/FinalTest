@@ -10,7 +10,7 @@ formatTodos = (groups, tasks) => {
   let formattedToDos = [];
   const added = [];
   groups.forEach(group => {
-      console.log("Processing groups", group._id, group.name, tasks);
+      // console.log("Processing groups", group._id, group.name, tasks);
       const groupTask = tasks.filter(task => {added.push(task._id); return task.group === group._id.toString() });
       formattedToDos.push({id: group._id, group: group.name, tasks: groupTask});
   })
@@ -29,6 +29,7 @@ router.get("/", verify, async (req, res) => {
 
 // Get Todo by ID
 router.post("/", verify, async (req, res) => {
+  console.log("Request to create TODO received");
   const group = await Groups.findOne({_id: req.body.group});
   if(!group) return res.send({error: "Invalid group Id"});
   console.log("===>", req.user);
@@ -38,6 +39,7 @@ router.post("/", verify, async (req, res) => {
 
 // Update Todo
 router.put("/:id", verify, async (req, res) => {
+  console.log("Update API request called", req.params.id);
   if (req.body.group) {
     const group = await Groups.findOne({ _id: req.body.group, user: req.user.user._id});
     if(!group) return re.send({error: "Invalid Group Id"});
@@ -48,8 +50,9 @@ router.put("/:id", verify, async (req, res) => {
     { _id: req.params.id },
     {
       $set: {
-        task: req.body.task ? req.body.task : foundTodo.task,
-        group: req.body.group ? req.body.group : foundTodo.group
+        task: req.body.task ? req.body.task : foundTodos.task,
+        group: req.body.group ? req.body.group : foundTodos.group,
+        status: req.body.status ? req.body.status : foundTodos.status
       },
     }
   );
@@ -57,8 +60,8 @@ router.put("/:id", verify, async (req, res) => {
 });
 
 // Update Todo
-router.put("/favorite/:id", verify, async (req, res) => {
-  
+router.put("/favorite/:id", async (req, res) => {
+  console.log("Request to fav toggle received", req.params.id)
   const foundTodos = await Todos.findOne({_id: req.params.id});
   if(!foundTodos) return res.send({error: "Invalid Todos ID"});
   const user = await Todos.updateOne(
@@ -74,7 +77,7 @@ router.put("/favorite/:id", verify, async (req, res) => {
 
 
 // Update Todo
-router.put("/completed/:id", verify, async (req, res) => {
+router.put("/completed/:id", async (req, res) => {
   const foundTodos = await Todos.findOne({_id: req.params.id});
   if(!foundTodos) return res.send({error: "Invalid Todos ID"});
   const user = await Todos.updateOne(

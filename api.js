@@ -7,7 +7,7 @@ const {mongodb} = require('./config/keys')
 // const {MongoClient} = require('mongodb');
 // const uri = "mongodb+srv://admin:AdminUser123@cluster0.i5gbr.mongodb.net/todo?retryWrites=true&w=majority";
 
-const port = process.env.PORT || 5000; 
+const port = process.env.PORT || 5000;
 // DB Connection logic import
 // const { initialize } = require('./dbconnection');
 //make object of express so that we can use methods
@@ -43,7 +43,20 @@ const asyncMiddleware = fn =>
 };
 
 // Middleware
-
+// const whitelist = ['http://localhost:3000'​, 'http://localhost:5000'​, 'https://shrouded-journey-38552.heroku...​']
+// const whitlist = ['http://localhost:3000'​, 'http://localhost:5000']
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     console.log("** Origin of request " + origin)
+//     if (whitelist.indexOf(origin) !== -1 || !origin) {
+//       console.log("Origin acceptable")
+//       callback(null, true)
+//     } else {
+//       console.log("Origin rejected")
+//       callback(new Error('Not allowed by CORS'))
+//     }
+//   }
+// }
 
 // Routers
 const userRouter = require("./Routes/userRoutes");
@@ -58,7 +71,10 @@ app.use("/groups", groupRouter);
 
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
+  app.use(express.static(path.join(__dirname,"client/build")));
+  app.get("*",function (req, res) {
+    res.sendFile(path.join(__dirname, "client/build","index.html"));
+  });
 } 
 
 app.listen(port,(err) => {

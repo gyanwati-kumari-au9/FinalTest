@@ -33,7 +33,7 @@ export async function getUserTodos(token) {
   return data;
 }
 
-export async function updateUser({ id, user, token }) {
+export async function updateUser( id, user, token ) {
   let data = await publicFetch
     .put(`users/${id}`, user, {
       headers: {
@@ -47,7 +47,21 @@ export async function updateUser({ id, user, token }) {
   return data;
 }
 
-export async function deleteTodos({ id, token }) {
+export async function updateToDo( id, todo, token ) {
+  let data = await publicFetch
+    .put(`todos/${id}`, todo, {
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+    .then((response) => response.data)
+    .catch((err) => err.data);
+
+  return data;
+}
+
+export async function deleteToDo( id, token ) {
   let data = await publicFetch
     .delete(`todos/${id}`, {
       headers: {
@@ -63,7 +77,7 @@ export async function deleteTodos({ id, token }) {
 
 // 
 export async function addTodos(todo, token) {
-  console.log("Ad ODO api called", todo, token)
+  // console.log("Ad ODO api called", todo, token)
   let data = await publicFetch
     .post("todos", todo, {
       headers: {
@@ -91,7 +105,8 @@ export async function updateTodoStatus(id, todo, token) {
   return data;
 }
 
-export async function toggleFavorite(id, todo, token) {
+export async function toggleFavorite(id, token) {
+  console.log("Calling toggle favorite api", id, token)
   let data = await publicFetch
     .put(`todos/favorite/${id}`, {
       headers: {
@@ -105,9 +120,9 @@ export async function toggleFavorite(id, todo, token) {
   return data;
 }
 
-export async function toggleComplete(id, todo, token) {
+export async function toggleComplete(id, token) {
   let data = await publicFetch
-    .put(`todos/complete/${id}`, {
+    .put(`todos/completed/${id}`, {
       headers: {
         "Content-Type": "application/json",
         "auth-token": token,
